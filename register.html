@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | CinemaStream</title>
+    <style>
+        /* 1. Global Reset & Layout */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1b 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Matches Login alignment */
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 2. Slide-In Animation */
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-120%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 3. Container Styling */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin-left: 60px; /* Consistent with Login page */
+            padding: 35px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            animation: slideInFromLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+        }
+
+        /* 4. Input & Field Styling */
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #00c6ff;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.2);
+        }
+
+        /* 5. OTP Section Styling */
+        .otp-box {
+            display: none; /* Hidden by default */
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0, 198, 255, 0.05);
+            border: 1px dashed rgba(0, 198, 255, 0.3);
+        }
+
+        /* 6. Button Styling */
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 10px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.3);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 7. Footer */
+        .footer-text {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .footer-text a {
+            color: #00c6ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Register</h2>
+        <p class="subtitle">Join our community today</p>
+
+        <div class="input-group">
+            <input id="name" placeholder="Full Name" spellcheck="false">
+        </div>
+        <div class="input-group">
+            <input id="email" type="email" placeholder="Email Address">
+        </div>
+        <div class="input-group">
+            <input id="phone" type="tel" placeholder="Phone Number">
+        </div>
+
+        <button class="secondary-btn" id="otpTrigger" onclick="sendOTP()">Get Verification OTP</button>
+
+        <div class="otp-box" id="otpBox">
+            <input id="otpInput" placeholder="Enter 4-Digit OTP" maxlength="4">
+            <button onclick="verifyOTP()">Verify OTP</button>
+        </div>
+
+        <div class="input-group">
+            <input id="username" placeholder="Choose Username" spellcheck="false">
+        </div>
+        <div class="input-group">
+            <input id="password" type="password" placeholder="Create Password">
+        </div>
+
+        <button onclick="register()" style="margin-top: 20px;">Create Account</button>
+
+        <p class="footer-text">Already have an account? <a href="login.html">Login</a></p>
+    </div>
+
+    <script>
+        let generatedOTP = null;
+        let otpVerified = false;
+
+        function sendOTP() {
+            const phone = document.getElementById("phone").value.trim();
+
+            if (!phone || phone.length < 10) {
+                alert("Please enter a valid phone number first.");
+                return;
+            }
+
+            // Generate fake OTP
+            generatedOTP = Math.floor(1000 + Math.random() * 9000);
+            
+            // In a real app, this would be an SMS. For demo, we alert it.
+            alert("Demo OTP: " + generatedOTP);
+
+            document.getElementById("otpBox").style.display = "block";
+            document.getElementById("otpTrigger").innerText = "Resend OTP";
+        }
+
+        function verifyOTP() {
+            const userOTP = document.getElementById("otpInput").value;
+
+            if (parseInt(userOTP) === generatedOTP) {
+                otpVerified = true;
+                alert("OTP Verified Successfully ✅");
+                document.getElementById("otpBox").style.background = "rgba(0, 255, 128, 0.1)";
+                document.getElementById("otpBox").style.borderColor = "#00ff80";
+            } else {
+                alert("Invalid OTP. Please try again ❌");
+            }
+        }
+
+        function register() {
+            if (!otpVerified) {
+                alert("Please verify your phone number via OTP first.");
+                return;
+            }
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!name || !email || !phone || !username || !password) {
+                alert("Please fill in all registration fields.");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem("users")) || {};
+
+            if (users[username]) {
+                alert("This username is already taken.");
+                return;
+            }
+
+            // Saving user data
+            users[username] = {
+                name,
+                email,
+                phone,
+                password,
+                history: []
+            };
+
+            localStorage.setItem("users", JSON.stringify(users));
+
+            alert("Account Created 🎉 Welcome to CinemaStream!");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

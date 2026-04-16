@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CinemaStream</title>
+    <style>
+        /* 1. Global Reset & Layout */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1b 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Fixes container to the left */
+            min-height: 100vh;
+            overflow: hidden; /* Prevents scrollbars during animation */
+        }
+
+        /* 2. Keyframes for Slide-In Animation */
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-120%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 3. Main Container */
+        .container {
+            width: 100%;
+            max-width: 380px;
+            margin-left: 60px; /* Distance from left wall */
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            
+            /* Animation Trigger */
+            animation: slideInFromLeft 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* 4. Typography & Headers */
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            
+            /* Fix for the wavy line warning: Included standard property */
+            background-clip: text; 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* 5. Form Elements */
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #00c6ff;
+            box-shadow: 0 0 12px rgba(0, 198, 255, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* 6. Links */
+        .footer-text {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .footer-text a {
+            color: #00c6ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .footer-text a:hover {
+            color: #0072ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Login</h2>
+        <p class="subtitle">Access your library and more</p>
+
+        <div class="input-group">
+            <input id="username" type="text" placeholder="Username" autocomplete="off">
+        </div>
+        
+        <div class="input-group">
+            <input id="password" type="password" placeholder="Password">
+        </div>
+
+        <button onclick="login()">Sign In</button>
+
+        <p class="footer-text">New user? <a href="register.html">Create Account</a></p>
+    </div>
+
+    <script>
+        function login() {
+            const usernameInput = document.getElementById("username").value.trim();
+            const passwordInput = document.getElementById("password").value;
+
+            // Simple validation check
+            if (!usernameInput || !passwordInput) {
+                alert("Please fill in both fields.");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("users")) || {};
+
+            if (!users[usernameInput]) {
+                alert("Account not found.");
+                return;
+            }
+
+            if (users[usernameInput].password !== passwordInput) {
+                alert("Incorrect password.");
+                return;
+            }
+
+            // Success
+            localStorage.setItem("currentUser", usernameInput);
+            window.location.href = "movie.html";
+        }
+
+        // Trigger login on Enter key
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+
+</body>
+</html>
